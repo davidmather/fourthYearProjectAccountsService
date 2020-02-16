@@ -1,0 +1,19 @@
+{
+  "name": "loginapp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "npm install && node index.js"
+  },
+  "author": "David Mather",
+  "license": "MIT",
+  "dependencies": {
+    "@grpc/proto-loader": "^0.5.2",
+    "cors": "^2.8.5",
+    "express-subdomain": "^1.0.5",
+    "grpc": "^1.24.0",
+    "mysql": "^2.17.1"
+  }
+}

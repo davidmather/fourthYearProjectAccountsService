@@ -1,0 +1,25 @@
+version: "2"
+services:
+  grpcaccountsservice:
+    image: "davidmather/accountsservice"
+    user: "node"
+    working_dir: /home/node/app
+    hostname: "grpcaccountsservice"
+    container_name: grpcaccountsservice
+    environment:
+      - NODE_ENV=production
+      - MYSQL_HOST=dbMysql
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=changeme
+      - MYSQL_DATABASE=Microservices3
+    volumes:
+      - ./:/home/node/app
+    ports:
+      - "5001:5001"
+    expose:
+      - "5001"
+    networks:
+      - shopnetwork
+
+networks:
+  shopnetwork:
