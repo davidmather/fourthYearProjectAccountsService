@@ -3,10 +3,11 @@ syntax = "proto3"; //Specify proto3 version.
 package example; //Optional: unique package name.
 
 service Account { //Service class to be used by the clients
-      rpc login(LoginRequest) returns (LoginReply){}
-      rpc register(RegisterRequest) returns (LoginReply){}
-      rpc logout(LogoutRequest) returns (LoginReply){}
-      rpc verify(verifyRequest) returns (LoginReply){}
+                  rpc login(LoginRequest) returns (LoginReply){}
+                  rpc register(RegisterRequest) returns (LoginReply){}
+                  rpc logout(LogoutRequest) returns (LoginReply){}
+                  rpc verify(verifyRequest) returns (LoginReply){}
+                  rpc getActiveUsers(verifyRequest) returns (LoginReply){}
 }
 
 // Information that will be passed between client and service
@@ -29,6 +30,11 @@ message RegisterRequest {
 }
 
 message LogoutRequest {
+    string cid = 1;
+    string password = 2;
+}
+
+message getActiveUsers {
     string cid = 1;
     string password = 2;
 }

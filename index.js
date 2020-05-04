@@ -3,7 +3,7 @@ let grpc = require("grpc");
 var protoLoader = require("@grpc/proto-loader");
 const PROTO_PATH = path.join(__dirname, 'protos/accounts.proto');
 const server = new grpc.Server();
-const SERVER_ADDRESS = "grpcaccountsservice:5001";
+const SERVER_ADDRESS = process.env.GRPC_SERVER || "localhost:5001";
 const mysql = require('mysql');
 
 // Load protobuf
@@ -26,10 +26,10 @@ function register(call, callback) {
     const loginTime = Math.floor(Date.now() / 1000);
 
     var con = mysql.createConnection({
-        host: process.env.MYSQL_HOST,
-        user: process.env.MYSQL_USER,
-        password: process.env.MYSQL_PASSWORD,
-        database: process.env.MYSQL_DATABASE
+        host:  process.env.MYSQL_HOST || "127.0.0.1",
+        user: process.env.MYSQL_USER || "root",
+        password: process.env.MYSQL_PASSWORD || "changeme",
+        database: process.env.MYSQL_DATABASE || "Microservices3"
     });
 
     con.connect(function(err) {
@@ -100,13 +100,11 @@ function register(call, callback) {
 // Receive message from client joining
 function logout(call, callback) {
     const { cid, password } = call.request; // call.request will match the input from our .proto file
-    console.log(call.request);
-
     var con = mysql.createConnection({
-        host:  process.env.MYSQL_HOST,
-        user: process.env.MYSQL_USER,
-        password: process.env.MYSQL_PASSWORD,
-        database: process.env.MYSQL_DATABASE
+        host:  process.env.MYSQL_HOST || "127.0.0.1",
+        user: process.env.MYSQL_USER || "root",
+        password: process.env.MYSQL_PASSWORD || "changeme",
+        database: process.env.MYSQL_DATABASE || "Microservices3"
     });
 
     con.connect(function(err) {
@@ -116,6 +114,7 @@ function logout(call, callback) {
             if (err) {
                 callback(null, { result:JSON.stringify({success:false})});
             } else {
+                console.log(call.request);
                 console.log(result[0].email);
                 let found = false;
                 for (var i = 0; i < ActiveUsers.length; i++){
@@ -146,10 +145,10 @@ function verify(call, callback) {
     const loginTime = Math.floor(Date.now() / 1000);
 
     var con = mysql.createConnection({
-        host:  process.env.MYSQL_HOST,
-        user: process.env.MYSQL_USER,
-        password: process.env.MYSQL_PASSWORD,
-        database: process.env.MYSQL_DATABASE
+        host:  process.env.MYSQL_HOST || "127.0.0.1",
+        user: process.env.MYSQL_USER || "root",
+        password: process.env.MYSQL_PASSWORD || "changeme",
+        database: process.env.MYSQL_DATABASE || "Microservices3"
     });
 
     con.connect(function(err) {
@@ -187,10 +186,10 @@ function login(call, callback) {
     const loginTime = Math.floor(Date.now() / 1000);
 
     var con = mysql.createConnection({
-        host:  process.env.MYSQL_HOST,
-        user: process.env.MYSQL_USER,
-        password: process.env.MYSQL_PASSWORD,
-        database: process.env.MYSQL_DATABASE
+        host:  process.env.MYSQL_HOST || "127.0.0.1",
+        user: process.env.MYSQL_USER || "root",
+        password: process.env.MYSQL_PASSWORD || "changeme",
+        database: process.env.MYSQL_DATABASE || "Microservices3"
     });
 
     con.connect(function(err) {
@@ -232,14 +231,24 @@ function login(call, callback) {
 
 }
 
+// Receive message from client joining
+function getActiveUsers(call, callback) {
+    const { cid, password } = call.request; // call.request will match the input from our .proto file
+    console.log(call.request);
+    console.log("get active users");
+    callback(null, { result:JSON.stringify(ActiveUsers)});
+}
+
 const exposedFunctions = {
     login: login,
     register: register,
     logout: logout,
-    verify: verify
+    verify: verify,
+    getActiveUsers, getActiveUsers
 };
 
 // Define server with the methods and start it
 server.addService(proto.example.Account.service, exposedFunctions);
 server.bind(SERVER_ADDRESS, grpc.ServerCredentials.createInsecure());
 server.start();
+module.exports = server;
